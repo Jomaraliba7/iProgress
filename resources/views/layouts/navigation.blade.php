@@ -1,7 +1,7 @@
 <nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 ml-64">
-        <div class="flex justify-between items-center h-16">
+    <div class="mx-auto px-4 sm:px-6 lg:px-1 ml-64">
+        <div class="flex justify-between items-center mx-2 h-16">
             <div class="flex">
                 <div class="text-white mt-3 animate-bounce">Welcome Back, {{ Auth::user()->name }}!</div>
             </div>
