@@ -10,14 +10,16 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/about', function () {
+    return view('about');
+})->middleware('auth')->name('about');
+
 
 Route::get('/myprojects', function () {
-    return view('profile.myprojects');
+    return view('myprojects');
 })->middleware('auth')->name('myprojects');
 
-Route::get('/about', function () {
-    return view('profile.about');
-})->middleware('auth')->name('about');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
