@@ -15,6 +15,10 @@ Route::get('/myprojects', function () {
     return view('profile.myprojects');
 })->middleware('auth')->name('myprojects');
 
+Route::get('/about', function () {
+    return view('profile.about');
+})->middleware('auth')->name('about');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
