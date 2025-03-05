@@ -5,12 +5,176 @@
                 {{ __('My Projects') }}
             </h1>
             <div class="flex justify-between items-center">
-                <button type="button" class="animate-pulse flex items-center space-x-2 p-2 bg-blue-700 hover:bg-blue-600 text-white rounded-xl">
-                    {{ __('+Create Project') }}
+                <button id="createProjectBtn" type="button" class="animate-pulse flex items-center space-x-2 p-2 bg-blue-700 hover:bg-blue-600 text-white rounded-xl">
+                     {{ __('+Create Project') }}
                 </button>
             </div>
         </div>
     </x-slot>
+
+<!-- Start Modal Form -->
+    <div id="projectForm" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg w-1/2 max-h-full overflow-y-auto">
+        <h2 class="text-xl font-semibold mb-4">Create Project</h2>
+        <form id="projectFormContent" method="POST" action="{{ route('projects.store') }}" enctype="multipart/form-data">
+            @csrf
+
+            <label>Region:</label>
+            <select name="region" id="region" class="block w-full p-2 border rounded">
+                <option value="Select--">Select--</option>
+                <option value="CAR">CAR</option>
+                <option value="Region 1">Region 1</option>
+                <option value="Region 2">Region 2</option>
+                <option value="Region 3">Region 3</option>
+                <option value="Region 4A">Region 4A</option>
+                <option value="Region 4B">Region 4B</option>
+                <option value="Region 5">Region 5</option>
+                <option value="Region 6/7">Region 6/7</option>
+                <option value="Region 9">Region 9</option>
+                <option value="Region 10">Region 10</option>
+                <option value="Region 11">Region 11</option>
+                <option value="Region 12">Region 12</option>
+                <option value="Region 13">Region 13</option>
+            </select><br>
+
+            <label>Type of Office:</label>
+            <select name="officeType" id="officeType" class="block w-full p-2 border rounded">
+                <option value="Select--">Select--</option>
+                <option value="Regional Office">Regional Office</option>
+                <option value="Provincial Office">Provincial Office</option>
+                <option value="Community Service Center">Community Service Center</option>
+            </select><br>
+
+            <label>Office:</label>
+            <select name="office" id="office" class="block w-full p-2 border rounded">
+                <option value="Select--">Select--</option>
+            </select><br>
+
+            <label>Project Name:</label>
+            <input type="text" name="projectName" class="block w-full p-2 border rounded"><br>
+
+            <label>Activities:</label>
+            <div id="activitiesContainer"></div>
+            <button type="button" onclick="addActivity()" class="bg-blue-500 text-white px-2 py-1 rounded mt-2">+ Add Activity</button><br><br>
+
+            <label>File Upload:</label>
+            <input type="file" name="projectFiles" class="block w-full p-2 border rounded"><br>
+
+            <label>Uploaded By:</label>
+            <div id="uploadedByContainer"></div>
+            <button type="button" onclick="addUploader()" class="bg-blue-500 text-white px-2 py-1 rounded mt-2">+ Add Name</button><br><br>
+
+            <label>Timestamp:</label>
+            <input type="text" id="timestamp" class="block w-full p-2 border rounded" readonly>
+
+            <div class="flex justify-end mt-4">
+                <button type="button" onclick="closeForm()" class="mr-2 px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById('createProjectBtn').addEventListener('click', function() {
+        document.getElementById('projectForm').classList.remove('hidden');
+        document.getElementById('timestamp').value = new Date().toLocaleString();
+    });
+
+    function closeForm() {
+        document.getElementById('projectForm').classList.add('hidden');
+    }
+
+    function addActivity() {
+        let container = document.getElementById('activitiesContainer');
+        let input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'activities[]';
+        input.className = 'block w-full p-2 border rounded mt-2';
+        container.appendChild(input);
+    }
+
+    function addUploader() {
+        let container = document.getElementById('uploadedByContainer');
+        let input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'uploadedBy[]';
+        input.className = 'block w-full p-2 border rounded mt-2';
+        container.appendChild(input);
+    }
+
+    document.getElementById('region').addEventListener('change', updateOffices);
+    document.getElementById('officeType').addEventListener('change', updateOffices);
+
+    function updateOffices() {
+        const region = document.getElementById('region').value;
+        const officeType = document.getElementById('officeType').value;
+        const officeSelect = document.getElementById('office');
+        officeSelect.innerHTML = '<option value="Select--">Select--</option>';
+
+        if (region !== 'Select--' && officeType !== 'Select--') {
+            const selectedRegion = regions.find(r => r.name.includes(region));
+            if (selectedRegion && selectedRegion.structure[officeType]) {
+                const offices = selectedRegion.structure[officeType];
+                if (Array.isArray(offices)) {
+                    offices.forEach(office => {
+                        const option = document.createElement('option');
+                        option.value = office;
+                        option.textContent = office;
+                        officeSelect.appendChild(option);
+                    });
+                } else {
+                    Object.keys(offices).forEach(office => {
+                        const option = document.createElement('option');
+                        option.value = office;
+                        option.textContent = office;
+                        officeSelect.appendChild(option);
+                    });
+                }
+            }
+        }
+    }
+
+    document.getElementById('projectFormContent').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const region = document.getElementById('region').value;
+        const officeType = document.getElementById('officeType').value;
+        const office = document.getElementById('office').value;
+        const projectName = document.getElementById('projectFormContent').projectName.value;
+
+        if (region !== 'Select--' && officeType !== 'Select--' && office !== 'Select--' && projectName) {
+            const folderPath = `/c:/Laravel Projects/${region}/${officeType}/${office}/${projectName}`;
+            createFolder(folderPath);
+        } else {
+            alert('Please fill in all required fields.');
+        }
+    });
+
+    function createFolder(path) {
+        fetch('/create-folder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ path })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Folder created successfully.');
+                closeForm();
+            } else {
+                alert('Failed to create folder.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred.');
+        });
+    }
+</script>
+<!-- End Modal Form -->
+
     <!-- Regions Dropdowns -->
     <div class="container mx-auto px-4 py-3">
         <div class="max-w-4xl mx-auto animate-none">
@@ -30,7 +194,6 @@
                                 "Baguio City Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Office 1": ["Project Name 1, Project Name 2"],
                                 "Danglas Community Service Center": ["Project Name 1, Project Name 2"],
                                 "Licuan-Baay Community Service Center": ["Project Name 1, Project Name 2"],
                                 "Manabo Community Service Center": ["Project Name 1, Project Name 2"],
@@ -83,10 +246,22 @@
                         structure: {
                             "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office": ["Project Name 3", "Project Name 4"]
+                                "Batanes Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Isabela Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Nueva Viscaya Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Quirino Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Center": ["Project Name 3", "Project Name 4"]
+                                "Sablang Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Itbayat Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Lasam Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "San Mariano Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Cauayan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Ilagan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Bambang Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Dupax Del Sur Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Kayapa Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Dipantan, Nagtipunan Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
@@ -95,36 +270,35 @@
                         structure: {
                             "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Aurora Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "Bataan Provincial Office": ["Project Name 1", "Project Name 2"],
-                                "Bulacan Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "Nueva Ecija Provincial Office": ["Project Name 1", "Project Name 2"],
-                                "Pampanga Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "Tarlac Provincial Office": ["Project Name 1", "Project Name 2"],
-                                "Zambales Provincial Office": ["Project Name 1", "Project Name 2"]
+                                "Zambales Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Aurora Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Calabgan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Dingalan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Bangkal Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Carranglan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Bamban Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Cabangan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "San Marcelino Community Service Center": ["Project Name 1, Project Name 2"]
+                                "Bangkal Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "DRT, Bulacan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Carranglan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Dapdap Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "San Marcelino Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Cabangan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Floridablanca, Pampanga Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Calabgan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Dingalan Community Service Center": ["Project Name 1", "Project Name 2"],
                             }
                         }
                     },
                     {
                         name: "Region 4A",
                         structure: {
-                            "Regional Office": ["Project Name 7", "Project Name 8"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office 7": ["Project Name 7", "Project Name 8"],
-                                "Provincial Office 8": ["Project Name 7"]
+                                "Quezon Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Office 7": ["Project Name 7"],
-                                "Community Service Office 8": ["Project Name 7", "Project Name 8"]
+                                "Catanauan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Rizal Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
@@ -133,20 +307,18 @@
                         structure: {
                             "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Palawan Provincial Office": ["Project Name 1, Project Name 2"],
-                                "Oriental Mindoro Provincial Office": ["Project Name 1, Project Name 2"],
-                                "Occidental Mindoro Provincial Office ": ["Project Name 1, Project Name 2"],
-                                "Romblon Interim Provincial Office": ["Project Name 1, Project Name 2"]
+                                "Palawan Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Oriental Mindoro Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Occidental Mindoro Provincial Office ": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Brooke's Point Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Roxas Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Bulalacao Community Service Center": ["Project Name 1, Project Name 2"],
-                                "San Jose Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Sablayan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Odiongan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Sibuyan Community Service Center": ["Project Name 1, Project Name 2"]
-                                
+                                "Brookes Point Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Roxas Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Bulalacao Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "San Jose Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sablayan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Odiongan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sibuyan Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
@@ -155,15 +327,15 @@
                         structure: {
                             "Regional Office": ["Project Name 11", "Project Name 12"],
                             "Provincial Office": {
-                                "Camarines Sur Provincial Office ": ["Project Name 11", "Project Name 12"],
+                                "Camarines Sur Provincial Office": ["Project Name 11", "Project Name 12"],
                                 "Camarines Norte Provincial Office ": ["Project Name 11", "Project Name 12"]
                                 
                             },
                             "Community Service Center": {
-                                "Buhi Community Service Office ": ["Project Name 11"],
-                                "Labo Community Service Office ": ["Project Name 11"],
-                                "Polangui Community Service Office ": ["Project Name 11"],
-                                "Sorsogon Community Service Office ": ["Project Name 11"]
+                                "Buhi Community Service Center": ["Project Name 11"],
+                                "Labo Community Service Center": ["Project Name 11"],
+                                "Polangui Community Service Center": ["Project Name 11"],
+                                "Sorsogon Community Service Center": ["Project Name 11"]
                                 
                             }
                         }
@@ -171,78 +343,114 @@
                     {
                         name: "Region 6/7",
                         structure: {
-                            "Regional Office": ["Project Name 13", "Project Name 14"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office 13": ["Project Name 13", "Project Name 14"],
-                                "Provincial Office 14": ["Project Name 13"]
+                                "Cebu Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Iloilo Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Negros Oriental Provincial Office": ["Project Name 1", "Project Name 2"],
                             },
                             "Community Service Center": {
-                                "Community Service Office 13": ["Project Name 13"],
-                                "Community Service Office 14": ["Project Name 13", "Project Name 14"]
+                                "San Jose Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Tapaz Capiz Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Bacolod City Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Jordan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Tagbiliran Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Guihulngan Community Service Center": ["Project Name 1", "Project Name 2"],
                             }
                         }
                     },
                     {
                         name: "Region 9",
                         structure: {
-                            "Regional Office": ["Project Name 15", "Project Name 16"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office 15": ["Project Name 15", "Project Name 16"],
-                                "Provincial Office 16": ["Project Name 15"]
+                                "Basilan Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Zamboanga Del Norte Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Zamboanga Del Sur Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Zamboanga Sibugay Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Zamboanga City Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Office 15": ["Project Name 15"],
-                                "Community Service Office 16": ["Project Name 15", "Project Name 16"]
+                                "Lamitan(ARMM) Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Labasan/Liloy Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sindangan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Piñan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Guipos Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Labangan/Ramon Magsaysay Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Zamboanga City Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Diplahan Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
                     {
                         name: "Region 10",
                         structure: {
-                            "Regional Office": ["Project Name 17", "Project Name 18"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office 17": ["Project Name 17", "Project Name 18"],
-                                "Provincial Office 18": ["Project Name 17"]
+                                "Bukidnon Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Misamis Oriental Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Lanao Del Norte Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Misamis Occidental Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Office 17": ["Project Name 17"],
-                                "Community Service Office 18": ["Project Name 17", "Project Name 18"]
+                                "Manolo Fortich Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Maramag Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Talakag Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sagay Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Initao Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Rogongon Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Ozamis City Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Gingoog Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Don Victoriano (Calamba) Community Service Centere": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
                     {
                         name: "Region 11",
                         structure: {
-                            "Regional Office": ["Project Name 19", "Project Name 20"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office 19": ["Project Name 19", "Project Name 20"],
-                                "Provincial Office 20": ["Project Name 19"]
+                                "Davao De Oro Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Davao City Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Davao Del Norte Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Davao Del Sur Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Davao Oriental Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Davao Occidental Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Office 19": ["Project Name 19"],
-                                "Community Service Office 20": ["Project Name 19", "Project Name 20"]
+                                "Mabini Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Maragusan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Calinan, Davao City Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Talaingod Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "New Corella, Kapalong Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sta. Maria Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Matanao Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Manay Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Cateel Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sarangani Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Malalag Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
                     {
                         name: "Region 12",
                         structure: {
-                            "Regional Office": ["Project Name 21", "Project Name 22"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Cotabato Provincial Office": ["Project Name 21", "Project Name 22"],
-                                "Sultan Kudarat Provincial Office": ["Project Name 21", "Project Name 22"],
-                                "South Cotabato Provincial Office": ["Project Name 21", "Project Name 22"],
-                                "Sarangani Provincial Office": ["Project Name 21", "Project Name 22"],
+                                "North Cotabato Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Sultan Kudarat Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "South Cotabato Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Sarangani Provincial Office": ["Project Name 1", "Project Name 2"],
                             },
                             "Community Service Center": {
-                                "Libungan Community Service Center": ["Project Name 21"],
-                                "Columbio Community Service Center": ["Project Name 21"],
-                                "Senator Ninoy Aquino Community Service Center": ["Project Name 21"],
-                                "Lake Sebu Community Service Center": ["Project Name 21"],
-                                "Tboli Community Service Center": ["Project Name 21"],
-                                "Polomolok Community Service Center": ["Project Name 21"],
-                                "Alabel Community Service Center": ["Project Name 21"],
-                                "Maitum Community Service Center": ["Project Name 21"]
+                                "Barongis, Libungan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Columbio Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Kulaman (SNA) Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Lake Sebu Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Tboli Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Polomolok Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Alabel Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Maasim (Maitum) Community Service Center": ["Project Name 1", "Project Name 2"]
                                
                             }
                         }
@@ -250,14 +458,22 @@
                     {
                         name: "Region 13",
                         structure: {
-                            "Regional Office": ["Project Name 23", "Project Name 24"],
+                            "Regional Office": ["Project Name 1", "Project Name 2"],
                             "Provincial Office": {
-                                "Provincial Office 23": ["Project Name 23", "Project Name 24"],
-                                "Provincial Office 24": ["Project Name 23"]
+                                "Agusan Del Norte Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Agusan Del Sur Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Surigao Del Norte Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Surigao Del Sur Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Community Service Office 23": ["Project Name 23"],
-                                "Community Service Office 24": ["Project Name 23", "Project Name 24"]
+                                "Santiago Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Las Nieves/Buenavista Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Lamingan, San LuisCommunity Service Center": ["Project Name 1", "Project Name 2"],
+                                "La Paz Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Bacuag Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Malimono Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Pakuan, Lanuza/Cantilan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Rajah Kabungsuan/Bislig Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     }
