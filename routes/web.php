@@ -21,14 +21,10 @@ Route::get('/about', function () {
     return view('profile.about');
 })->middleware('auth')->name('about');
 
-Route::post('/create-folder', [ProjectController::class, 'createFolder'])->name('create-folder');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-Route::resource('projects', ProjectController::class);
 
 require __DIR__.'/auth.php';
