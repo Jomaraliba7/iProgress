@@ -21,14 +21,7 @@ Route::get('/about', function () {
     return view('profile.about');
 })->middleware('auth')->name('about');
 
-Route::post('/create-folder', function (Illuminate\Http\Request $request) {
-    $path = $request->input('path');
-    if (!Storage::exists($path)) {
-        Storage::makeDirectory($path);
-        return response()->json(['success' => true]);
-    }
-    return response()->json(['success' => false]);
-});
+Route::post('/create-folder', [ProjectController::class, 'createFolder'])->name('create-folder');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

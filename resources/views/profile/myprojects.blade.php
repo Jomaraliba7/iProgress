@@ -135,7 +135,6 @@
     }
 
     document.getElementById('projectFormContent').addEventListener('submit', function(event) {
-        event.preventDefault();
         const region = document.getElementById('region').value;
         const officeType = document.getElementById('officeType').value;
         const office = document.getElementById('office').value;
@@ -146,11 +145,12 @@
             createFolder(folderPath);
         } else {
             alert('Please fill in all required fields.');
+            event.preventDefault();
         }
     });
 
     function createFolder(path) {
-        fetch('/create-folder', {
+        fetch('{{ route('create-folder') }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -162,9 +162,9 @@
         .then(data => {
             if (data.success) {
                 alert('Folder created successfully.');
-                closeForm();
+                document.getElementById('projectFormContent').submit();
             } else {
-                alert('Failed to create folder.');
+                alert(data.message || 'Failed to create folder.');
             }
         })
         .catch(error => {

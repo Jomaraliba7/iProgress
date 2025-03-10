@@ -20,6 +20,8 @@ return new class extends Migration
             $table->json('uploaded_by')->nullable();
             $table->string('file_path')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
+            //$table->timestamps();
         });
     }
 
