@@ -357,7 +357,7 @@
                     </main>
 
                     <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-                    Copyright, iProgressjoms @2025
+                    Copyright, iProgressjomsxpamxpogi @2025
                     </footer>
                 </div>
             </div>

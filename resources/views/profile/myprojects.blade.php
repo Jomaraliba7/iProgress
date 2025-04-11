@@ -12,6 +12,64 @@
         </div>
     </x-slot>
 
+    <!-- Start Modal Form -->
+    <div id="projectForm" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-1/2 max-h-full overflow-y-auto">
+            <h2 class="text-xl font-semibold mb-4">Create Project</h2>
+            <form id="projectFormContent" method="POST" action="{{ route('projects.store') }}">
+                @csrf
+
+                <label>Region:</label>
+                <select name="region" id="region" class="block w-full p-2 border rounded">
+                    <option value="Select--">Select--</option>
+                    <option value="CAR">CAR</option>
+                    <option value="Region 1">Region 1</option>
+                    <option value="Region 2">Region 2</option>
+                    <option value="Region 3">Region 3</option>
+                    <option value="Region 4A">Region 4A</option>
+                    <option value="Region 4B">Region 4B</option>
+                    <option value="Region 5">Region 5</option>
+                    <option value="Region 6/7">Region 6/7</option>
+                    <option value="Region 9">Region 9</option>
+                    <option value="Region 10">Region 10</option>
+                    <option value="Region 11">Region 11</option>
+                    <option value="Region 12">Region 12</option>
+                    <option value="Region 13">Region 13</option>
+                </select><br>
+
+                <label>Type of Office:</label>
+                <select name="officeType" id="officeType" class="block w-full p-2 border rounded">
+                    <option value="Select--">Select--</option>
+                    <option value="Regional Office">Regional Office</option>
+                    <option value="Provincial Office">Provincial Office</option>
+                    <option value="Community Service Center">Community Service Center</option>
+                </select><br>
+
+                <label>Office:</label>
+                <select name="office" id="office" class="block w-full p-2 border rounded">
+                    <option value="Select--">Select--</option>
+                </select><br>
+
+                <label>Project Name:</label>
+                <input type="text" name="projectName" class="block w-full p-2 border rounded"><br>
+
+                <label>Activities:</label>
+                <div id="activitiesContainer"></div>
+                <button type="button" onclick="addActivity()" class="bg-blue-500 text-white px-2 py-1 rounded mt-2">+ Add Activity</button><br><br>
+
+                <label>Uploaded By:</label>
+                <div id="uploadedByContainer"></div>
+                <button type="button" onclick="addUploader()" class="bg-blue-500 text-white px-2 py-1 rounded mt-2">+ Add Name</button><br><br>
+
+                <div class="flex justify-end mt-4">
+                    <button type="button" onclick="closeForm()" class="mr-2 px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Modal Form -->
+
     <!-- Regions Dropdowns -->
     <div class="container mx-auto px-4 py-3">
         <div class="max-w-4xl mx-auto animate-none">
@@ -31,28 +89,26 @@
                                 "Baguio City Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
-                                "Danglas Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Licuan-Baay Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Manabo Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Kabugao Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Luna Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Conner Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Atok Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Bokod Community Service Center ": ["Project Name 1, Project Name 2"],
-                                "Sablan Community Service Center ": ["Project Name 1, Project Name 2"],
-                                "Itogon Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Sabata Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Sabebosa Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Panaba Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Banaue Community Service Center ": ["Project Name 1, Project Name 2"],
-                                "Aguinaldo Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Tinoc Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Balbalan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Tanudan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Tinglayan Community Service Center": ["Project Name 1, Project Name 2"],
-                                "Baguio City Community Service Center": ["Project Name 1, Project Name 2"]
-                                
-
+                                "Danglas Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Licuan-Baay Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Manabo Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Kabugao Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Luna Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Conner Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Atok Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Bokod Community Service Center ": ["Project Name 1", "Project Name 2"],
+                                "Sablan Community Service Center ": ["Project Name 1", "Project Name 2"],
+                                "Itogon Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sabata Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Sabebosa Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Panaba Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Banaue Community Service Center ": ["Project Name 1", "Project Name 2"],
+                                "Aguinaldo Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Tinoc Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Balbalan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Tanudan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Tinglayan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Baguio City Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
@@ -65,7 +121,6 @@
                                 "Ilocos Sur Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "La Union Interim Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "Pangasinan Provincial Office": ["Project Name 1", "Project Name 2"]
-                                
                             },
                             "Community Service Center": {
                                 "Dingras Community Service Center": ["Project Name 1", "Project Name 2"],
@@ -122,7 +177,7 @@
                                 "Cabangan Community Service Center": ["Project Name 1", "Project Name 2"],
                                 "Floridablanca, Pampanga Community Service Center": ["Project Name 1", "Project Name 2"],
                                 "Calabgan Community Service Center": ["Project Name 1", "Project Name 2"],
-                                "Dingalan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Dingalan Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
@@ -166,14 +221,12 @@
                             "Provincial Office": {
                                 "Camarines Sur Provincial Office": ["Project Name 11", "Project Name 12"],
                                 "Camarines Norte Provincial Office ": ["Project Name 11", "Project Name 12"]
-                                
                             },
                             "Community Service Center": {
                                 "Buhi Community Service Center": ["Project Name 11"],
                                 "Labo Community Service Center": ["Project Name 11"],
                                 "Polangui Community Service Center": ["Project Name 11"],
                                 "Sorsogon Community Service Center": ["Project Name 11"]
-                                
                             }
                         }
                     },
@@ -184,7 +237,7 @@
                             "Provincial Office": {
                                 "Cebu Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "Iloilo Provincial Office": ["Project Name 1", "Project Name 2"],
-                                "Negros Oriental Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Negros Oriental Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
                                 "San Jose Community Service Center": ["Project Name 1", "Project Name 2"],
@@ -192,7 +245,7 @@
                                 "Bacolod City Community Service Center": ["Project Name 1", "Project Name 2"],
                                 "Jordan Community Service Center": ["Project Name 1", "Project Name 2"],
                                 "Tagbiliran Community Service Center": ["Project Name 1", "Project Name 2"],
-                                "Guihulngan Community Service Center": ["Project Name 1", "Project Name 2"],
+                                "Guihulngan Community Service Center": ["Project Name 1", "Project Name 2"]
                             }
                         }
                     },
@@ -277,7 +330,7 @@
                                 "North Cotabato Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "Sultan Kudarat Provincial Office": ["Project Name 1", "Project Name 2"],
                                 "South Cotabato Provincial Office": ["Project Name 1", "Project Name 2"],
-                                "Sarangani Provincial Office": ["Project Name 1", "Project Name 2"],
+                                "Sarangani Provincial Office": ["Project Name 1", "Project Name 2"]
                             },
                             "Community Service Center": {
                                 "Barongis, Libungan Community Service Center": ["Project Name 1", "Project Name 2"],
@@ -288,7 +341,6 @@
                                 "Polomolok Community Service Center": ["Project Name 1", "Project Name 2"],
                                 "Alabel Community Service Center": ["Project Name 1", "Project Name 2"],
                                 "Maasim (Maitum) Community Service Center": ["Project Name 1", "Project Name 2"]
-                               
                             }
                         }
                     },
@@ -315,9 +367,7 @@
                         }
                     }
                 ];
-            </script>
 
-            <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     const container = document.querySelector(".max-w-4xl");
 
@@ -417,16 +467,104 @@
                         container.innerHTML += regionContent;
                     });
                 });
+
+                function toggleDropdown(id) {
+                    let dropdown = document.getElementById(id);
+                    if (dropdown) {
+                        dropdown.classList.toggle("hidden");
+                    }
+                }
+
+                document.getElementById('createProjectBtn').addEventListener('click', function() {
+                    document.getElementById('projectForm').classList.remove('hidden');
+                });
+
+                function closeForm() {
+                    document.getElementById('projectForm').classList.add('hidden');
+                }
+
+                function addActivity() {
+                    let container = document.getElementById('activitiesContainer');
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = 'activities[]';
+                    input.className = 'block w-full p-2 border rounded mt-2';
+                    container.appendChild(input);
+                }
+
+                function addUploader() {
+                    let container = document.getElementById('uploadedByContainer');
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = 'uploadedBy[]';
+                    input.className = 'block w-full p-2 border rounded mt-2';
+                    container.appendChild(input);
+                }
+
+                document.getElementById('region').addEventListener('change', updateOffices);
+                document.getElementById('officeType').addEventListener('change', updateOffices);
+
+                function updateOffices() {
+                    const region = document.getElementById('region').value;
+                    const officeType = document.getElementById('officeType').value;
+                    const officeSelect = document.getElementById('office');
+                    officeSelect.innerHTML = '<option value="Select--">Select--</option>';
+
+                    if (region !== 'Select--' && officeType !== 'Select--') {
+                        const selectedRegion = regions.find(r => r.name.includes(region));
+                        if (selectedRegion && selectedRegion.structure[officeType]) {
+                            const offices = selectedRegion.structure[officeType];
+                            if (Array.isArray(offices)) {
+                                offices.forEach(office => {
+                                    const option = document.createElement('option');
+                                    option.value = office;
+                                    option.textContent = office;
+                                    officeSelect.appendChild(option);
+                                });
+                            } else {
+                                Object.keys(offices).forEach(office => {
+                                    const option = document.createElement('option');
+                                    option.value = office;
+                                    option.textContent = office;
+                                    officeSelect.appendChild(option);
+                                });
+                            }
+                        }
+                    }
+                }
+
+                document.getElementById('projectFormContent').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(this);
+
+                    fetch('{{ route('projects.store') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Project created successfully.');
+                            closeForm();
+                            // Optionally, you can refresh the page or update the project list dynamically
+                        } else {
+                            alert(data.message || 'Failed to create project.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred.');
+                    });
+                });
             </script>
         </div>
     </div>
-
-    <script>
-        function toggleDropdown(id) {
-            let dropdown = document.getElementById(id);
-            if (dropdown) {
-                dropdown.classList.toggle("hidden");
-            }
-        }
-    </script>
 </x-app-layout>
